@@ -1,6 +1,7 @@
 [tools]
 uv = "latest"
 actionlint = "latest"
+pre-commit = "latest"
 
 [env]
 PYTHONPATH = "./src"
