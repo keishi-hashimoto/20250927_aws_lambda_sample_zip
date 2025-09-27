@@ -25,6 +25,8 @@ jobs:
         uses: "actions/checkout@v5"
       - name: setup uv
         uses: "astral-sh/setup-uv@v6"
+      - name: install python
+        run: uv python install
       - name: create_work_dir
         run: mkdir dist
       - name: copy source code
