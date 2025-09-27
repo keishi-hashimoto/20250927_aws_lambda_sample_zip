@@ -39,7 +39,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: deploy to lambda
-        uses: "uses: aws-actions/aws-lambda-deploy@v1.1.0"
+        uses: "aws-actions/aws-lambda-deploy@v1.1.0"
         with:
           function-name: ${{ secrets.LAMBDA_FUNCTION_NAME }}
           code-artifacts-dir: dist
