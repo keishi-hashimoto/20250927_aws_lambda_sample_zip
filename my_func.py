@@ -1,6 +1,6 @@
 import json
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from aws_lambda_powertools.utilities.parser import parse, BaseModel, ValidationError
+from aws_lambda_powertools.utilities.parser import BaseModel, event_parser
 from pydantic import ConfigDict
 from typing import TypedDict
 
@@ -17,12 +17,8 @@ class Response(TypedDict):
     body: str
 
 
-def my_handler(_event: dict, context: LambdaContext) -> Response:
-    try:
-        event = parse(event=_event, model=MyEvent)
-    except ValidationError as e:
-        print(e.json())
-        return Response(statusCode=400, body=json.dumps({"error": "BAD REQUEST"}))
+@event_parser(model=MyEvent)
+def my_handler(event: MyEvent, context: LambdaContext) -> Response:
     x = event.x
     y = event.y
     body = json.dumps({"result": x / y})
