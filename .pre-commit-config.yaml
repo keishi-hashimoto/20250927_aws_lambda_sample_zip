@@ -16,3 +16,10 @@ repos:
       - id: ruff-check
       # Run the formatter.
       - id: ruff-format
+  - repo: local
+    hooks:
+      - id: type checking
+        name: type checking
+        language: system
+        entry: uv run mypy
+        types: ["python"]
