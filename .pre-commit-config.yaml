@@ -33,3 +33,4 @@ repos:
         stages: ["pre-push"]
         types: ["python"]
         always_run: true
+        pass_filenames: false
