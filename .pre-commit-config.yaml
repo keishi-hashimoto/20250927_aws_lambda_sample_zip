@@ -21,8 +21,9 @@ repos:
       - id: type checking
         name: type checking
         language: system
-        entry: uv run mypy
+        entry: uv run mypy .
         types: ["python"]
+        pass_filenames: false # あるファイルの変更が他のファイルに影響するかもしれないので、差分が無かったファイルもチェックする
   - repo: local
     hooks:
       - id: pytest
