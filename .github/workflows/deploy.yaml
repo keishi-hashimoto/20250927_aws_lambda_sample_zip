@@ -1,0 +1,47 @@
+name: Deploy
+run-name: Deploy to lambda
+
+on:
+  push:
+    branches: ["main"]
+
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+permissions: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: checkout
+        uses: "actions/checkout@v5"
+      - name: setup uv
+        uses: "astral-sh/setup-uv@v6"
+      - name: create_work_dir
+        run: mkdir dist
+      - name: copy source code
+        run: cp src/* dist/ -r
+      - name: create requirements file
+        run: uv pip compile pyproject.toml > requirements.txt
+      - name: install dependencies
+        run: uv pip install -r requirements.txt --target dist
+      - name: configure aws credentials
+        uses: "aws-actions/configure-aws-credentials@v4"
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: deploy to lambda
+        uses: "uses: aws-actions/aws-lambda-deploy@v1.1.0"
+        with:
+          function-name: ${{ secrets.LAMBDA_FUNCTION_NAME }}
+          code-artifacts-dir: dist
+          handler: my_func.my_handler
+          runtime: python3.13

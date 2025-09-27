@@ -1,2 +1,6 @@
 [tools]
 uv = "latest"
+actionlint = "latest"
+
+[env]
+PYTHONPATH = "./src"
