@@ -1,25 +1,24 @@
-import json
+from boto3 import client
+
 from aws_lambda_powertools.utilities.typing import LambdaContext
-from aws_lambda_powertools.utilities.parser import BaseModel, event_parser
-from pydantic import ConfigDict
-from typing import TypedDict
+from aws_lambda_powertools.utilities.data_classes import S3Event
+from aws_lambda_powertools.utilities.parser import event_parser
+
+s3_client = client("s3")
 
 
-class MyEvent(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+@event_parser(model=S3Event)
+def my_handler(event: S3Event, context: LambdaContext):
+    # S3 イベントの型は以下を参照
+    # https://github.com/aws-powertools/powertools-lambda-python/blob/d3d94cc38d72bc99d54bb5864420daa73c8f9ac4/aws_lambda_powertools/utilities/data_classes/s3_event.py#L301
+    s3s = [r.s3 for r in event.records]
+    print(s3s)
 
-    x: int
-    y: int
-
-
-class Response(TypedDict):
-    statusCode: int
-    body: str
-
-
-@event_parser(model=MyEvent)
-def my_handler(event: MyEvent, context: LambdaContext) -> Response:
-    x = event.x
-    y = event.y
-    body = json.dumps({"result": x / y})
-    return Response(statusCode=200, body=body)
+    # TODO: get source file from s3 bucket
+    for s3 in s3s:
+        bucket_name = s3.bucket.name
+        key = s3.get_object.key
+        print(f"{bucket_name=}, {key=}")
+        s3_object = s3_client.get_object(Bucket=bucket_name, Key=key)
+        body = s3_object["Body"].read()
+        print(f"[{bucket_name}/{key}] {len(body)}")
