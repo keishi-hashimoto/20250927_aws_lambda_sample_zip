@@ -4,6 +4,8 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 from aws_lambda_powertools.utilities.parser import parse, ValidationError
 from aws_lambda_powertools.utilities.parser.models import S3Model
 
+from urllib.parse import unquote_plus
+
 s3_client = client("s3")
 
 
@@ -21,7 +23,7 @@ def my_handler(event: dict, context: LambdaContext):
     # TODO: get source file from s3 bucket
     for s3 in s3s:
         bucket_name = s3.bucket.name
-        key = s3.object.key
+        key = unquote_plus(s3.object.key)
         print(f"{bucket_name=}, {key=}")
         s3_object = s3_client.get_object(Bucket=bucket_name, Key=key)
         body = s3_object["Body"].read()
