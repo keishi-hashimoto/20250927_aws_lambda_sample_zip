@@ -43,7 +43,7 @@ jobs:
       - name: pytest
         run: |
           echo "${PYTHONPATH}"
-          uv run pytest
+          uv run pytest --no-sync
         env:
           PYTHONPATH: tmp
       - name: create artifacts dir
