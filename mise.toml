@@ -1,5 +1,5 @@
 [tools]
-uv = "latest"
+uv = "0.8"
 actionlint = "latest"
 pre-commit = "latest"
 
