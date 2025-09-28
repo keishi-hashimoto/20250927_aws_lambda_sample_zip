@@ -1,6 +1,10 @@
+from boto3 import client
+
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from aws_lambda_powertools.utilities.data_classes import S3Event
 from aws_lambda_powertools.utilities.parser import event_parser
+
+s3_client = client("s3")
 
 
 @event_parser(model=S3Event)
@@ -12,4 +16,9 @@ def my_handler(event: S3Event, context: LambdaContext):
 
     # TODO: get source file from s3 bucket
     for s3 in s3s:
-        print(f"bucket={s3.bucket.name}, key={s3.get_object.key}")
+        bucket_name = s3.bucket.name
+        key = s3.get_object.key
+        print(f"{bucket_name=}, {key=}")
+        s3_object = s3_client.get_object(Bucket=bucket_name, Key=key)
+        body = s3_object["Body"].read()
+        print(f"[{bucket_name}/{key}] {len(body)}")
