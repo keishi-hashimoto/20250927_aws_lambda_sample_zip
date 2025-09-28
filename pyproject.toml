@@ -10,4 +10,11 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["mypy>=1.18.2", "pytest>=8.4.2"]
+dev = [
+    "boto3-stubs-custom",
+    "mypy>=1.18.2",
+    "pytest>=8.4.2",
+]
+
+[tool.uv.sources]
+boto3-stubs-custom = { path = "vendored/boto3_stubs_custom-1.40.40-py3-none-any.whl" }
