@@ -27,13 +27,32 @@ jobs:
         uses: "astral-sh/setup-uv@v6"
       - name: install python
         run: uv python install
-      - name: create_work_dir
+      # アップロードするソースコードに不備が無いかを確認するために、作業ディレクトリ内でも自動テストを流す
+      # 以下の 2 点の理由から、dist ディレクトリとは別にテスト専用のディレクトリを用意する
+      # 1. テスト実行時に生成される pycache を artifacts に含めたくない
+      # 2. テストに必要となる pytest などのパッケージを artifacts に含めたくない
+      - name: create test dir
+        run: mkdir tmp
+      - name: copy source code to test dir
+        run: cp src/* tmp/ -r
+      - name: create requirements file
+        # pytest などが必要なので --group dev を指定する
+        run: uv pip compile pyproject.toml --group dev > requirements-dev.txt
+      - name: install dependencies to test dir
+        run: uv pip install -r requirements-dev.txt --target tmp
+      - name: pytest
+        run: |
+          echo "${PYTHONPATH}"
+          uv run pytest
+        env:
+          PYTHONPATH: tmp
+      - name: create artifacts dir
         run: mkdir dist
-      - name: copy source code
+      - name: copy source code to artifacts dir
         run: cp src/* dist/ -r
       - name: create requirements file
         run: uv pip compile pyproject.toml > requirements.txt
-      - name: install dependencies
+      - name: install dependencies to artifacts dir
         run: uv pip install -r requirements.txt --target dist
       - name: configure aws credentials
         uses: "aws-actions/configure-aws-credentials@v4"
