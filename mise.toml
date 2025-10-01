@@ -5,3 +5,7 @@ pre-commit = "latest"
 
 [env]
 PYTHONPATH = "./src"
+
+[tasks.pytest]
+run = "uv run pytest"
+env = { '_'.file = ".env.test" }
